@@ -16,8 +16,8 @@
         <!-- color of the menu overflow icon (three vertical dots) -->
         <item name="android:textColorSecondary">@color/my_secondary_text</item>
 
-
         <item name="android:windowBackground">@color/window_background</item>
+
     </style>
 
     <!--

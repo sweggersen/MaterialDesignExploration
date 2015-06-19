@@ -4,6 +4,8 @@ import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.ActivityOptions;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
@@ -23,11 +25,18 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.ChangeImageTransform;
+import android.transition.Explode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -157,6 +166,49 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             return inflater.inflate(R.layout.cardviews, container, false);
+        }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            if (view == null) return;
+
+            LinearLayout cardLayout = (LinearLayout) view.findViewById(R.id.card_parent);
+            for (int i = 0; i < 4; i++) {
+                final View card = LayoutInflater.from(getActivity()).inflate(R.layout.card, cardLayout, false);
+
+                if (i == 0) {
+                    int margin = (int) getResources().getDimension(R.dimen.card_margin);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    params.setMargins(margin, margin, margin, margin);
+                    card.setLayoutParams(params);
+                }
+
+                final String transitionName = "imageIcon";
+
+                card.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ImageView imageIcon = (ImageView) card.findViewById(R.id.icon);
+                        Intent intent = new Intent(getActivity(), DetailActivity.class);
+                        intent.putExtra(DetailActivity.EXTRA_ALBUM_ART_RESID, R.drawable.icon);
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(getActivity(), imageIcon, transitionName);
+                            Bundle bundle = options.toBundle();
+                            /*bundle.putString("SHARED", transitionName);
+                            imageIcon.setTransitionName(transitionName);*/
+
+                            getActivity().startActivity(intent, bundle);
+                        } else {
+                            getActivity().startActivity(intent);
+                        }
+
+                    }
+                });
+
+                cardLayout.addView(card);
+            }
         }
     }
 
